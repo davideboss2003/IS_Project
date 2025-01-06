@@ -1,0 +1,78 @@
+/* Stiluri pentru pagina de detalii */
+.movie-detail {
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+
+.movie-detail .movie-banner {
+  position: relative;
+  height: 400px;
+  background-color: #000;
+}
+
+.movie-detail .banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(50%);
+}
+
+.movie-detail .movie-banner-overlay {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+.movie-detail .movie-poster {
+  width: 150px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  margin-right: 20px;
+}
+
+.movie-detail .movie-text {
+  flex: 1;
+}
+
+.movie-detail .movie-text h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.movie-detail .movie-genres {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.movie-detail .movie-overview {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.movie-detail .movie-details div {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.movie-detail .movie-details strong {
+  font-weight: bold;
+  color: #fff;
+}
+
+.movie-detail .movie-trailer {
+  margin: 2rem 1rem;
+  text-align: center;
+}
+
+.movie-detail .qr-container {
+  margin-top: 1rem;
+  display: inline-block; /* astfel încât să fie centrat */
+}

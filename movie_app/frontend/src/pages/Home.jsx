@@ -1,22 +1,26 @@
-import MovieCard from "../components/MovieCard";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { searchMovies, getPopularMovies } from "../services/api";
+import MovieCard from "../components/MovieCard";
 import "../css/Home.css";
 
 function Home() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Load popular movies on initial render
   useEffect(() => {
     const loadPopularMovies = async () => {
       try {
         const popularMovies = await getPopularMovies();
         setMovies(popularMovies);
+        setError(null);
       } catch (err) {
-        console.log(err);
-        setError("Failed to load movies...");
+        console.error("Error loading popular movies:", err);
+        setError("Failed to load popular movies.");
       } finally {
         setLoading(false);
       }
@@ -25,26 +29,33 @@ function Home() {
     loadPopularMovies();
   }, []);
 
+  // Handle search form submission
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return
-    if (loading) return
-
-    setLoading(true)
+    if (!searchQuery.trim()) return; // Ignore empty search
+    setLoading(true);
     try {
-        const searchResults = await searchMovies(searchQuery)
-        setMovies(searchResults)
-        setError(null)
+      const searchResults = await searchMovies(searchQuery);
+      setMovies(searchResults);
+      setError(null);
     } catch (err) {
-        console.log(err)
-        setError("Failed to search movies...")
+      console.error("Error searching for movies:", err);
+      setError("Failed to search movies.");
     } finally {
-        setLoading(false)
+      setLoading(false);
     }
+  };
+
+  // Handle clicking on a movie card
+  const handleMovieClick = (e, movieId) => {
+    // Prevent navigation if a specific child element (like a favorite button) is clicked
+    if (e.target.closest(".favorite-btn")) return;
+    navigate(`/movie/${movieId}`);
   };
 
   return (
     <div className="home">
+      {/* Search Form */}
       <form onSubmit={handleSearch} className="search-form">
         <input
           type="text"
@@ -58,14 +69,18 @@ function Home() {
         </button>
       </form>
 
-        {error && <div className="error-message">{error}</div>}
+      {/* Error Message */}
+      {error && <div className="error-message">{error}</div>}
 
+      {/* Movies Grid */}
       {loading ? (
         <div className="loading">Loading...</div>
       ) : (
         <div className="movies-grid">
           {movies.map((movie) => (
-            <MovieCard movie={movie} key={movie.id} />
+            <div key={movie.id} className="movie-card-wrapper" onClick={(e) => handleMovieClick(e, movie.id)}>
+              <MovieCard movie={movie} />
+            </div>
           ))}
         </div>
       )}
