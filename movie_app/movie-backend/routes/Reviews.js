@@ -1,59 +1,47 @@
-// routes/reviews.js
 const express = require("express");
 const router = express.Router();
-const Review = require("../models/Review");
+const mongoose = require("mongoose");
 
-// GET all reviews for a given movieId
-// e.g. GET /api/reviews/299534
+// Schema și model pentru comentarii
+const commentSchema = new mongoose.Schema({
+  movieId: { type: String, required: true },
+  author: { type: String, default: "Anonymous" },
+  text: { type: String, required: true },
+  timestamp: { type: Date, default: Date.now },
+});
+
+const Comment = mongoose.model("Comment", commentSchema);
+
+// Route: Obține comentarii pentru un film
 router.get("/:movieId", async (req, res) => {
-  const { movieId } = req.params;
   try {
-    const reviews = await Review.find({ movieId }).sort({ createdAt: -1 });
-    return res.json(reviews);
+    const { movieId } = req.params;
+    const comments = await Comment.find({ movieId }).sort({ timestamp: -1 });
+    res.json(comments);
   } catch (error) {
-    console.error("Error fetching reviews:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Error fetching comments" });
   }
 });
 
-// POST a new review for a given movieId
-// e.g. POST /api/reviews/299534
+// Route: Adaugă un comentariu nou
 router.post("/:movieId", async (req, res) => {
-  const { movieId } = req.params;
-  const { author, text } = req.body;
-
-  if (!text || text.trim() === "") {
-    return res.status(400).json({ message: "Review text is required" });
-  }
-
   try {
-    const newReview = new Review({
+    const { movieId } = req.params;
+    const { author, text } = req.body;
+
+    const newComment = new Comment({
       movieId,
-      author: author || "Anonymous",
+      author,
       text,
     });
 
-    await newReview.save();
-    return res.status(201).json(newReview);
+    const savedComment = await newComment.save();
+    res.status(201).json(savedComment);
   } catch (error) {
-    console.error("Error saving review:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error saving comment:", error);
+    res.status(500).json({ message: "Error saving comment" });
   }
 });
-// DELETE a review by its ID
-router.delete("/:reviewId", async (req, res) => {
-  const { reviewId } = req.params;
-  try {
-    const deletedReview = await Review.findByIdAndDelete(reviewId);
-    if (!deletedReview) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-    return res.status(200).json({ message: "Review deleted" });
-  } catch (error) {
-    console.error("Error deleting review:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-});
-
 
 module.exports = router;
